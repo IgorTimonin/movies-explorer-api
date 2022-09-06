@@ -35,7 +35,7 @@ const movieSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    trailerLink: {
+    trailer: {
       type: String,
       required: true,
       validate: linkRegExPattern,

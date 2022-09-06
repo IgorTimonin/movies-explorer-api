@@ -11,38 +11,34 @@ const ConflictError = require('../errors/ConflictError');
 const { NODE_ENV, JWT_SECRET } = process.env;
 
 module.exports.createUser = (req, res, next) => {
-  const {
-    name, about, avatar, email, password,
-  } = req.body;
+  const { name, email, password } = req.body;
   return bcrypt
     .hash(password, SALT_ROUND)
     .then((hash) => {
       User.create({
         name,
-        about,
-        avatar,
         email,
         password: hash,
       })
-        .then(({ _id }) => res.send({
-          name,
-          about,
-          avatar,
-          email,
-          _id,
-        }))
+        .then(({ _id }) =>
+          res.send({
+            name,
+            email,
+            _id,
+          })
+        )
         .catch((err) => {
           if (err.code === 11000) {
             next(
-              new ConflictError('Пользователь c таким email уже существует'),
+              new ConflictError('Пользователь c таким email уже существует')
             );
           } else if (err.name === 'ValidationError') {
             next(
               new BadRequestError(
                 `${Object.values(err.errors)
                   .map((error) => error.massage)
-                  .join(', ')}`,
-              ),
+                  .join(', ')}`
+              )
             );
           } else {
             next(err);
@@ -52,30 +48,11 @@ module.exports.createUser = (req, res, next) => {
     .catch(next);
 };
 
-module.exports.getAllUsers = (req, res, next) => {
-  User.find({})
-    .then((user) => res.send({ users: user }))
-    .catch(next);
-};
-
-module.exports.getUserById = (req, res, next) => {
-  User.findById(req.params.userId)
-    .orFail(() => next(new NotFoundError(`Пользователь с id: ${req.user._id} не найден.`)))
-    .then((user) => {
-      res.send(user);
-    })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        next(new BadRequestError('Передан неверный id пользователя'));
-      } else {
-        next(err);
-      }
-    });
-};
-
 module.exports.getMe = (req, res, next) => {
   User.findById(req.user._id)
-    .orFail(() => next(new NotFoundError(`Пользователь с id: ${req.user._id} не найден.`)))
+    .orFail(() =>
+      next(new NotFoundError(`Пользователь с id: ${req.user._id} не найден.`))
+    )
     .then((user) => {
       res.send(user);
     })
@@ -89,48 +66,25 @@ module.exports.getMe = (req, res, next) => {
 };
 
 module.exports.updateUserProfile = (req, res, next) => {
-  const { name, about } = req.body;
+  const { name, email } = req.body;
   User.findByIdAndUpdate(
     req.user._id,
-    { name, about },
+    { name, email },
     {
       new: true,
       runValidators: true,
-    },
+    }
   )
-    .orFail(() => next(new NotFoundError(`Пользователь с id: ${req.user._id} не найден.`)))
+    .orFail(() =>
+      next(new NotFoundError(`Пользователь с id: ${req.user._id} не найден.`))
+    )
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(
           new BadRequestError(
-            'Переданы некорректные данные для обновления информации о пользователе',
-          ),
-        );
-      } else {
-        next(err);
-      }
-    });
-};
-
-module.exports.updateUserAvatar = (req, res, next) => {
-  const { avatar } = req.body;
-  User.findByIdAndUpdate(
-    req.user._id,
-    { avatar },
-    {
-      new: true,
-      runValidators: true,
-    },
-  )
-    .orFail(() => next(new NotFoundError('Пользователь не найден.')))
-    .then((user) => res.send(user))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        next(
-          new BadRequestError(
-            'Переданы некорректные данные для обновления аватара',
-          ),
+            'Переданы некорректные данные для обновления информации о пользователе'
+          )
         );
       } else {
         next(err);
@@ -149,14 +103,14 @@ module.exports.login = (req, res, next) => {
       const token = jwt.sign(
         { _id: user._id },
         NODE_ENV === 'development' ? JWT_SECRET : 'dev-secret',
-        { expiresIn: '7d' },
+        { expiresIn: '7d' }
       );
       if (!token) {
         next(new UnauthorizedError('Ошибка при создании токена'));
       }
       return res
         .cookie('jwt', token, {
-          domain: 'itmesto.students.nomoredomains.sbs',
+          // domain: 'itmesto.students.nomoredomains.sbs',
           maxAge: 3600000 * 24 * 7,
           httpOnly: true,
           sameSite: 'none',
@@ -165,5 +119,13 @@ module.exports.login = (req, res, next) => {
         .status(200)
         .send({ message: 'Успешный вход' });
     })
+    .catch(() => next(new UnauthorizedError('Ошибка аутентификации')));
+};
+
+module.exports.logoutUser = (req, res, next) => {
+  res
+    .clearCookie('jwt')
+    .status(200)
+    .send({ message: 'Вы вышли из системы' })
     .catch(() => next(new UnauthorizedError('Ошибка аутентификации')));
 };

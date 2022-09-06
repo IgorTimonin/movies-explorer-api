@@ -1,17 +1,17 @@
-const cardRouter = require('express').Router();
+const movieRouter = require('express').Router();
 const { celebrate, errors } = require('celebrate');
 const {
-  cardIdValidator,
-  createCardValidator,
+  movieIdValidator,
+  createMovieValidator,
 } = require('../middlewares/dataValidation');
 const {
-  createCard,
-  getCard,
-  deleteCard,
-} = require('../controllers/cards');
+  createMovie,
+  getMovie,
+  deleteMovie,
+} = require('../controllers/movies');
 
-cardRouter.post('/', celebrate(createCardValidator), createCard);
-cardRouter.get('/', getCard);
-cardRouter.delete('/_Id', celebrate(cardIdValidator), deleteCard);
+movieRouter.get('/', getMovie);
+movieRouter.post('/', celebrate(createMovieValidator), createMovie);
+movieRouter.delete('/_Id', celebrate(movieIdValidator), deleteMovie);
 errors();
-module.exports = cardRouter;
+module.exports = movieRouter;
