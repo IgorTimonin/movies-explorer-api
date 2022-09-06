@@ -8,14 +8,10 @@ const {
   createCard,
   getCard,
   deleteCard,
-  likeCard,
-  dislikeCard,
 } = require('../controllers/cards');
 
 cardRouter.post('/', celebrate(createCardValidator), createCard);
 cardRouter.get('/', getCard);
-cardRouter.delete('/:cardId', celebrate(cardIdValidator), deleteCard);
-cardRouter.put('/:cardId/likes', celebrate(cardIdValidator), likeCard);
-cardRouter.delete('/:cardId/likes', celebrate(cardIdValidator), dislikeCard);
+cardRouter.delete('/_Id', celebrate(cardIdValidator), deleteCard);
 errors();
 module.exports = cardRouter;
