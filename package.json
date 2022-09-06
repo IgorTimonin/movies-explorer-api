@@ -1,4 +1,22 @@
 {
+  "name": "movies-explorer-backend",
+  "version": "1.0.0",
+  "description": "backend for movies-explorer project",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "lint": "npx eslint ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/IgorTimonin/movies-explorer-api"
+  },
+  "author": "IgorTimonin",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/IgorTimonin/movies-explorer-api/issues"
+  },
   "dependencies": {
     "bcrypt": "^5.0.1",
     "celebrate": "^15.0.1",
