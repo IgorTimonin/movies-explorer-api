@@ -4,6 +4,7 @@ const cookieParser = require('cookie-parser');
 
 const { celebrate, errors } = require('celebrate');
 const cors = require('cors');
+const helmet = require('helmet');
 const limiter = require('express-limiter');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const { login, createUser, logoutUser } = require('./controllers/users');
@@ -36,6 +37,7 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+app.use(helmet());
 
 limiter({
   path: '*',
