@@ -14,7 +14,7 @@ module.exports = (req, res, next) => {
   try {
     tokenVerefy = jwt.verify(
       token,
-      NODE_ENV === 'development' ? JWT_SECRET : 'dev-secret',
+      NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
     );
     if (tokenVerefy) {
       req.user = tokenVerefy;
