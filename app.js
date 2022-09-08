@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
 
 const { celebrate, errors } = require('celebrate');
-// const cors = require('cors');
+const cors = require('cors');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const { login, createUser, logoutUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
@@ -28,13 +28,13 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(requestLogger); // логгер запросов
 
-// const corsOptions = {
-//   origin: /https?:\/\/api.filmexplorer.students.nomoredomains.sbs/,
-//   credentials: true,
-//   optionsSuccessStatus: 200,
-// };
+const corsOptions = {
+  origin: /https?:\/\/filmexplorer.students.nomoredomains.sbs/,
+  credentials: true,
+  optionsSuccessStatus: 200,
+};
 
-// app.use(cors(corsOptions));
+app.use(cors(corsOptions));
 
 app.post('/signin', celebrate(loginUserValidator), login);
 app.post('/signup', celebrate(createUserValidator), createUser);
