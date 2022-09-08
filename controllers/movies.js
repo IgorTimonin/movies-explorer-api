@@ -37,8 +37,8 @@ module.exports.createMovie = (req, res, next) => {
       if (err.name === 'ValidationError') {
         next(
           new BadRequestError(
-            'Переданы некорректные данные для добавления фильма'
-          )
+            'Переданы некорректные данные для добавления фильма',
+          ),
         );
       } else {
         next(err);
@@ -53,7 +53,7 @@ module.exports.getMovie = (req, res, next) => {
 };
 
 module.exports.deleteMovie = (req, res, next) => {
-  Movie.findById(req.params.movieId)
+  Movie.findOne({ movieId: req.params.movieId })
     .then((movie) => {
       if (!movie) {
         throw new NotFoundError('Запрашиваемый фильм не найден.');
@@ -68,27 +68,3 @@ module.exports.deleteMovie = (req, res, next) => {
     })
     .catch(next);
 };
-
-module.exports.likeMovie = (req, res, next) =>
-  Movie.findByIdAndUpdate(
-    req.params.movieId,
-    { $addToSet: { likes: req.user._id } },
-    { new: true }
-  )
-    .orFail(() => next(new NotFoundError('Фильм с указанным id не найден')))
-    .then((movie) => {
-      res.send(movie);
-    })
-    .catch(next);
-
-module.exports.dislikeMovie = (req, res, next) =>
-  Movie.findByIdAndUpdate(
-    req.params.movieId,
-    { $pull: { likes: req.user._id } },
-    { new: true },
-  )
-    .orFail(() => next(new NotFoundError('Фильм с указанным id не найден')))
-    .then((movie) => {
-      res.send(movie);
-    })
-    .catch(next);

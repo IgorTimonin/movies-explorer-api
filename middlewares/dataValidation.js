@@ -54,8 +54,6 @@ module.exports.movieIdValidator = {
   params: Joi.object().keys({
     movieId: Joi.string()
       .required()
-      .min(24)
-      .max(24)
-      .pattern(/^[a-f\d]{24}$/i),
+      .min(1),
   }),
 };

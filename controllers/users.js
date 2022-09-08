@@ -20,25 +20,23 @@ module.exports.createUser = (req, res, next) => {
         email,
         password: hash,
       })
-        .then(({ _id }) =>
-          res.send({
-            name,
-            email,
-            _id,
-          })
-        )
+        .then(({ _id }) => res.send({
+          name,
+          email,
+          _id,
+        }))
         .catch((err) => {
           if (err.code === 11000) {
             next(
-              new ConflictError('Пользователь c таким email уже существует')
+              new ConflictError('Пользователь c таким email уже существует'),
             );
           } else if (err.name === 'ValidationError') {
             next(
               new BadRequestError(
                 `${Object.values(err.errors)
                   .map((error) => error.massage)
-                  .join(', ')}`
-              )
+                  .join(', ')}`,
+              ),
             );
           } else {
             next(err);
@@ -50,9 +48,7 @@ module.exports.createUser = (req, res, next) => {
 
 module.exports.getMe = (req, res, next) => {
   User.findById(req.user._id)
-    .orFail(() =>
-      next(new NotFoundError(`Пользователь с id: ${req.user._id} не найден.`))
-    )
+    .orFail(() => next(new NotFoundError(`Пользователь с id: ${req.user._id} не найден.`)))
     .then((user) => {
       res.send(user);
     })
@@ -73,18 +69,16 @@ module.exports.updateUserProfile = (req, res, next) => {
     {
       new: true,
       runValidators: true,
-    }
+    },
   )
-    .orFail(() =>
-      next(new NotFoundError(`Пользователь с id: ${req.user._id} не найден.`))
-    )
+    .orFail(() => next(new NotFoundError(`Пользователь с id: ${req.user._id} не найден.`)))
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(
           new BadRequestError(
-            'Переданы некорректные данные для обновления информации о пользователе'
-          )
+            'Переданы некорректные данные для обновления информации о пользователе',
+          ),
         );
       } else {
         next(err);
@@ -103,18 +97,18 @@ module.exports.login = (req, res, next) => {
       const token = jwt.sign(
         { _id: user._id },
         NODE_ENV === 'development' ? JWT_SECRET : 'dev-secret',
-        { expiresIn: '7d' }
+        { expiresIn: '7d' },
       );
       if (!token) {
         next(new UnauthorizedError('Ошибка при создании токена'));
       }
       return res
         .cookie('jwt', token, {
-          // domain: 'itmesto.students.nomoredomains.sbs',
+          domain: 'localhost',
           maxAge: 3600000 * 24 * 7,
           httpOnly: true,
-          sameSite: 'none',
-          secure: true,
+          sameSite: true,
+          // secure: true,
         })
         .status(200)
         .send({ message: 'Успешный вход' });
