@@ -52,7 +52,7 @@ module.exports.userIdValidator = {
 
 module.exports.movieIdValidator = {
   params: Joi.object().keys({
-    movieId: Joi.string()
+    Id: Joi.string()
       .required()
       .min(24)
       .max(24)
