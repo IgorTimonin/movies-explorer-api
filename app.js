@@ -4,6 +4,7 @@ const cookieParser = require('cookie-parser');
 
 const { celebrate, errors } = require('celebrate');
 const cors = require('cors');
+const limiter = require('express-limiter');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const { login, createUser, logoutUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
@@ -35,6 +36,14 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+
+limiter({
+  path: '*',
+  method: 'all',
+  lookup: 'connection.remoteAddress',
+  total: 120,
+  expire: 3600000 * 24,
+});
 
 app.post('/signin', celebrate(loginUserValidator), login);
 app.post('/signup', celebrate(createUserValidator), createUser);

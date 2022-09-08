@@ -28,7 +28,8 @@
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.5.4",
     "validator": "^13.7.0",
-    "winston": "^3.8.1"
+    "winston": "^3.8.1",
+    "express-limiter": "^1.6.1"
   },
   "devDependencies": {
     "eslint": "^8.23.0",
