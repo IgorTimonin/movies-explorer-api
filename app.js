@@ -22,16 +22,18 @@ const {
 } = require('./middlewares/dataValidation');
 const NotFoundError = require('./errors/NotFoundError');
 const { mongoAdress } = require('./configs');
+const { errorHandler } = require('./middlewares/errorHandler');
+const { pageNotFoundErr } = require('./errors/errorsConsts');
 
 mongoose.connect(NODE_ENV === 'production' ? DB_PATH : mongoAdress, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   family: 4,
 });
+app.use(requestLogger); // логгер запросов
 app.use(rateLimiter);
 app.use(express.json());
 app.use(cookieParser());
-app.use(requestLogger); // логгер запросов
 
 const corsOptions = {
   origin: /https?:\/\/filmexplorer.students.nomoredomains.sbs/,
@@ -49,17 +51,9 @@ app.get('/signout', auth, logoutUser);
 app.use('/users', auth, userRouter);
 app.use('/movies', auth, movieRouter);
 app.use('/*', auth, (req, res, next) => {
-  next(new NotFoundError('Упс! Такой страницы не существует'));
+  next(new NotFoundError(pageNotFoundErr));
 });
 app.use(errorLogger); // логгер ошибок
 app.use(errors()); // обработчик ошибок celebrate
-
-// централизованный обработчик ошибок
-app.use((err, req, res, next) => {
-  const { statusCode = 500, message } = err;
-  res.status(statusCode).send({
-    message: statusCode === 500 ? 'На сервере произошла ошибка' : message,
-  });
-  next();
-});
+app.use(errorHandler); // централизованный обработчик ошибок
 app.listen(PORT);

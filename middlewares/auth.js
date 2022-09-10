@@ -8,15 +8,15 @@ module.exports = (req, res, next) => {
   if (!token) {
     throw new UnauthorizedError('Требуется аутентификация');
   }
-  let tokenVerefy;
+  let tokenVerify;
 
   try {
-    tokenVerefy = jwt.verify(
+    tokenVerify = jwt.verify(
       token,
       NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
     );
-    if (tokenVerefy) {
-      req.user = tokenVerefy;
+    if (tokenVerify) {
+      req.user = tokenVerify;
     }
   } catch (err) {
     throw new UnauthorizedError(`Неверный токен ${err}`);

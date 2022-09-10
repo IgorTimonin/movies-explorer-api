@@ -1,12 +1,21 @@
 require('dotenv').config();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { SALT_ROUND } = require('../configs');
+const { SALT_ROUND, domainAdress } = require('../configs');
 const User = require('../models/user');
 const NotFoundError = require('../errors/NotFoundError');
 const BadRequestError = require('../errors/BadRequestError');
 const UnauthorizedError = require('../errors/UnauthorizedError');
 const ConflictError = require('../errors/ConflictError');
+const {
+  createTokenErr,
+  successLogout,
+  successLogin,
+  reqUserDataErr,
+  userNotFoundErr,
+  invalidUserIdErr,
+  conflictEmailErr,
+} = require('../errors/errorsConsts');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 
@@ -20,23 +29,23 @@ module.exports.createUser = (req, res, next) => {
         email,
         password: hash,
       })
-        .then(({ _id }) => res.send({
-          name,
-          email,
-          _id,
-        }))
+        .then(({ _id }) =>
+          res.send({
+            name,
+            email,
+            _id,
+          })
+        )
         .catch((err) => {
           if (err.code === 11000) {
-            next(
-              new ConflictError('Пользователь c таким email уже существует'),
-            );
+            next(new ConflictError(conflictEmailErr));
           } else if (err.name === 'ValidationError') {
             next(
               new BadRequestError(
                 `${Object.values(err.errors)
                   .map((error) => error.massage)
-                  .join(', ')}`,
-              ),
+                  .join(', ')}`
+              )
             );
           } else {
             next(err);
@@ -48,13 +57,13 @@ module.exports.createUser = (req, res, next) => {
 
 module.exports.getMe = (req, res, next) => {
   User.findById(req.user._id)
-    .orFail(() => next(new NotFoundError(`Пользователь с id: ${req.user._id} не найден.`)))
+    .orFail(() => new NotFoundError(userNotFoundErr))
     .then((user) => {
       res.send(user);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new BadRequestError('Передан неверный id пользователя'));
+        next(new BadRequestError(invalidUserIdErr));
       } else {
         next(err);
       }
@@ -69,17 +78,14 @@ module.exports.updateUserProfile = (req, res, next) => {
     {
       new: true,
       runValidators: true,
-    },
+    }
   )
-    .orFail(() => next(new NotFoundError(`Пользователь с id: ${req.user._id} не найден.`)))
     .then((user) => res.send(user))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        next(
-          new BadRequestError(
-            'Переданы некорректные данные для обновления информации о пользователе',
-          ),
-        );
+      if (err.code === 11000) {
+        next(new ConflictError(conflictEmailErr));
+      } else if (err.name === 'ValidationError') {
+        next(new BadRequestError(reqUserDataErr));
       } else {
         next(err);
       }
@@ -91,35 +97,28 @@ module.exports.login = (req, res, next) => {
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      if (!user) {
-        return Promise.reject(new Error('Неправильные почта или пароль'));
-      }
       const token = jwt.sign(
         { _id: user._id },
         NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
-        { expiresIn: '7d' },
+        { expiresIn: '7d' }
       );
       if (!token) {
-        next(new UnauthorizedError('Ошибка при создании токена'));
+        next(new UnauthorizedError(createTokenErr));
       }
       return res
         .cookie('jwt', token, {
-          // domain: 'filmexplorer.students.nomoredomains.sbs',
+          domain: domainAdress,
           maxAge: 3600000 * 24 * 7,
           httpOnly: true,
           sameSite: false,
           // secure: true,
         })
         .status(200)
-        .send({ message: 'Успешный вход' });
+        .send({ message: successLogin });
     })
-    .catch(() => next(new UnauthorizedError('Ошибка аутентификации')));
+    .catch(next);
 };
 
-module.exports.logoutUser = (req, res, next) => {
-  res
-    .clearCookie('jwt')
-    .status(200)
-    .send({ message: 'Вы вышли из системы' })
-    .catch(() => next(new UnauthorizedError('Ошибка аутентификации')));
+module.exports.logoutUser = (res) => {
+  res.clearCookie('jwt').status(200).send({ message: successLogout });
 };
