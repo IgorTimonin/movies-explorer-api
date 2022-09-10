@@ -29,13 +29,11 @@ module.exports.createUser = (req, res, next) => {
         email,
         password: hash,
       })
-        .then(({ _id }) =>
-          res.send({
-            name,
-            email,
-            _id,
-          })
-        )
+        .then(({ _id }) => res.send({
+          name,
+          email,
+          _id,
+        }))
         .catch((err) => {
           if (err.code === 11000) {
             next(new ConflictError(conflictEmailErr));
@@ -44,8 +42,8 @@ module.exports.createUser = (req, res, next) => {
               new BadRequestError(
                 `${Object.values(err.errors)
                   .map((error) => error.massage)
-                  .join(', ')}`
-              )
+                  .join(', ')}`,
+              ),
             );
           } else {
             next(err);
@@ -78,7 +76,7 @@ module.exports.updateUserProfile = (req, res, next) => {
     {
       new: true,
       runValidators: true,
-    }
+    },
   )
     .then((user) => res.send(user))
     .catch((err) => {
@@ -100,7 +98,7 @@ module.exports.login = (req, res, next) => {
       const token = jwt.sign(
         { _id: user._id },
         NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
-        { expiresIn: '7d' }
+        { expiresIn: '7d' },
       );
       if (!token) {
         next(new UnauthorizedError(createTokenErr));
