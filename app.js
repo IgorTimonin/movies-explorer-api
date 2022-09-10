@@ -14,8 +14,7 @@ const { rateLimiter } = require('./middlewares/limiter');
 
 const { NODE_ENV, DB_PATH, PORT = 3001 } = process.env;
 const app = express();
-const movieRouter = require('./routes/movies');
-const userRouter = require('./routes/users');
+
 const {
   loginUserValidator,
   createUserValidator,
@@ -24,6 +23,7 @@ const NotFoundError = require('./errors/NotFoundError');
 const { mongoAdress } = require('./configs');
 const { errorHandler } = require('./middlewares/errorHandler');
 const { pageNotFoundErr } = require('./errors/errorsConsts');
+const { userRouter, movieRouter } = require('./routes');
 
 mongoose.connect(NODE_ENV === 'production' ? DB_PATH : mongoAdress, {
   useNewUrlParser: true,

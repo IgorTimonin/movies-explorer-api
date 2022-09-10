@@ -110,8 +110,8 @@ module.exports.login = (req, res, next) => {
           domain: domainAdress,
           maxAge: 3600000 * 24 * 7,
           httpOnly: true,
-          sameSite: false,
-          // secure: true,
+          sameSite: true,
+          secure: true,
         })
         .status(200)
         .send({ message: successLogin });
@@ -119,6 +119,6 @@ module.exports.login = (req, res, next) => {
     .catch(next);
 };
 
-module.exports.logoutUser = (res) => {
+module.exports.logoutUser = (req, res) => {
   res.clearCookie('jwt').status(200).send({ message: successLogout });
 };
