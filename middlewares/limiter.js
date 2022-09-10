@@ -1,11 +1,9 @@
-const limiter = require('express-limiter');
+const limiter = require('express-rate-limit');
 
-module.exports = () => {
-  limiter({
-    path: '*',
-    method: 'all',
-    lookup: 'connection.remoteAddress',
-    total: 100,
-    expire: 3600000 * 24,
-  });
-};
+module.exports.rateLimiter = limiter({
+  windowMs: 24 * 60 * 60 * 1000, // 24 часа
+  max: 100,
+  message: 'Превышено кол-во запросов за 24 часа с одного ip',
+  standardHeaders: true,
+  legacyHeaders: false,
+});

@@ -10,7 +10,7 @@ module.exports.createMovie = (req, res, next) => {
       if (err.name === 'ValidationError') {
         next(
           new BadRequestError(
-            'Переданы некорректные данные для добавления фильма'
+            'Переданы некорректные данные для добавления фильма',
           ),
         );
       } else {

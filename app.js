@@ -10,7 +10,8 @@ const helmet = require('helmet');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const { login, createUser, logoutUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
-// const limiter = require('./middlewares/limiter');
+const { rateLimiter } = require('./middlewares/limiter');
+
 const { NODE_ENV, DB_PATH, PORT = 3001 } = process.env;
 const app = express();
 const movieRouter = require('./routes/movies');
@@ -27,7 +28,7 @@ mongoose.connect(NODE_ENV === 'production' ? DB_PATH : mongoAdress, {
   useUnifiedTopology: true,
   family: 4,
 });
-
+app.use(rateLimiter);
 app.use(express.json());
 app.use(cookieParser());
 app.use(requestLogger); // логгер запросов
@@ -40,7 +41,7 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.use(helmet());
-// app.use(limiter);
+
 app.post('/signin', celebrate(loginUserValidator), login);
 app.post('/signup', celebrate(createUserValidator), createUser);
 app.get('/signout', auth, logoutUser);
