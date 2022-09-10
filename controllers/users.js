@@ -118,5 +118,12 @@ module.exports.login = (req, res, next) => {
 };
 
 module.exports.logoutUser = (req, res) => {
-  res.clearCookie('jwt').status(200).send({ message: successLogout });
+  res
+    .clearCookie('jwt', {
+      domain: domainAdress,
+      httpOnly: true,
+      sameSite: true,
+    })
+    .status(200)
+    .send({ message: successLogout });
 };
