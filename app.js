@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
@@ -5,12 +6,12 @@ const cookieParser = require('cookie-parser');
 const { celebrate, errors } = require('celebrate');
 const cors = require('cors');
 const helmet = require('helmet');
-const limiter = require('express-limiter');
+
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const { login, createUser, logoutUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
-
-const { PORT = 3001 } = process.env;
+// const limiter = require('./middlewares/limiter');
+const { NODE_ENV, DB_PATH, PORT = 3001 } = process.env;
 const app = express();
 const movieRouter = require('./routes/movies');
 const userRouter = require('./routes/users');
@@ -21,7 +22,7 @@ const {
 const NotFoundError = require('./errors/NotFoundError');
 const { mongoAdress } = require('./configs');
 
-mongoose.connect(mongoAdress, {
+mongoose.connect(NODE_ENV === 'production' ? DB_PATH : mongoAdress, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   family: 4,
@@ -39,18 +40,10 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.use(helmet());
-
-limiter({
-  path: '*',
-  method: 'all',
-  lookup: 'connection.remoteAddress',
-  total: 120,
-  expire: 3600000 * 24,
-});
-
+// app.use(limiter);
 app.post('/signin', celebrate(loginUserValidator), login);
 app.post('/signup', celebrate(createUserValidator), createUser);
-app.get('/signout', logoutUser);
+app.get('/signout', auth, logoutUser);
 
 app.use('/users', auth, userRouter);
 app.use('/movies', auth, movieRouter);

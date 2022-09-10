@@ -18,35 +18,24 @@ module.exports.createUserValidator = {
 
 module.exports.updateUserValidator = {
   body: Joi.object().keys({
-    name: Joi.string().min(2).max(30),
-    email: Joi.string().min(2).max(30),
+    name: Joi.string().required().min(2).max(30),
+    email: Joi.string().required().email(),
   }),
 };
 
 module.exports.createMovieValidator = {
   body: Joi.object().keys({
-    country: Joi.string(),
-    director: Joi.string(),
-    description: Joi.string(),
-    nameRU: Joi.string(),
-    nameEN: Joi.string(),
-    movieId: Joi.string(),
-    duration: Joi.number(),
-    year: Joi.number(),
+    country: Joi.string().required(),
+    director: Joi.string().required(),
+    description: Joi.string().required(),
+    nameRU: Joi.string().required(),
+    nameEN: Joi.string().required(),
+    movieId: Joi.number().required(),
+    duration: Joi.number().required(),
+    year: Joi.string().required(),
     trailer: Joi.string().required().pattern(linkRegExPattern),
     image: Joi.string().required().pattern(linkRegExPattern),
     thumbnail: Joi.string().required().pattern(linkRegExPattern),
-    owner: Joi.string(),
-  }),
-};
-
-module.exports.userIdValidator = {
-  params: Joi.object().keys({
-    userId: Joi.string()
-      .required()
-      .min(24)
-      .max(24)
-      .pattern(/^[a-f\d]{24}$/i),
   }),
 };
 

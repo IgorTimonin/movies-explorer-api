@@ -4,40 +4,13 @@ const BadRequestError = require('../errors/BadRequestError');
 const ForbiddenError = require('../errors/ForbiddenError');
 
 module.exports.createMovie = (req, res, next) => {
-  const {
-    country,
-    director,
-    duration,
-    year,
-    description,
-    image,
-    trailer,
-    nameRU,
-    nameEN,
-    thumbnail,
-    movieId,
-  } = req.body;
-  const owner = req.user._id;
-  Movie.create({
-    country,
-    director,
-    duration,
-    year,
-    description,
-    image,
-    trailer,
-    nameRU,
-    nameEN,
-    thumbnail,
-    movieId,
-    owner,
-  })
+  Movie.create({ ...req.body, owner: req.user._id })
     .then((movie) => res.status(201).send(movie))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(
           new BadRequestError(
-            'Переданы некорректные данные для добавления фильма',
+            'Переданы некорректные данные для добавления фильма'
           ),
         );
       } else {
@@ -46,7 +19,7 @@ module.exports.createMovie = (req, res, next) => {
     });
 };
 
-module.exports.getMovie = (req, res, next) => {
+module.exports.getMovies = (req, res, next) => {
   Movie.find({})
     .then((movie) => res.send(movie))
     .catch(next);
@@ -63,8 +36,8 @@ module.exports.deleteMovie = (req, res, next) => {
       }
       return movie.remove();
     })
-    .then(() => {
-      Movie.find({}).then((movie) => res.send(movie));
+    .then((movie) => {
+      res.send(movie);
     })
     .catch(next);
 };

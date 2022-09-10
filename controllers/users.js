@@ -104,10 +104,10 @@ module.exports.login = (req, res, next) => {
       }
       return res
         .cookie('jwt', token, {
-          domain: 'filmexplorer.students.nomoredomains.sbs',
+          // domain: 'filmexplorer.students.nomoredomains.sbs',
           maxAge: 3600000 * 24 * 7,
           httpOnly: true,
-          sameSite: true,
+          sameSite: false,
           // secure: true,
         })
         .status(200)

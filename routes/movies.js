@@ -6,11 +6,11 @@ const {
 } = require('../middlewares/dataValidation');
 const {
   createMovie,
-  getMovie,
+  getMovies,
   deleteMovie,
 } = require('../controllers/movies');
 
-movieRouter.get('/', getMovie);
+movieRouter.get('/', getMovies);
 movieRouter.post('/', celebrate(createMovieValidator), createMovie);
 movieRouter.delete('/:Id', celebrate(movieIdValidator), deleteMovie);
 errors();
