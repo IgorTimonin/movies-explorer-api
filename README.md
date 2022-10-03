@@ -3,9 +3,8 @@ Backend part of Diploma
 
 ## Адрес сервера
 
-`` - ip адрес сервера
-`` - адрес frontend
-`` - адрес api
+158.160.11.33:3001 - ip адрес сервера
+api.filmexplorer.students.nomoredomains.sbs - адрес api
 
 ## Директории
 

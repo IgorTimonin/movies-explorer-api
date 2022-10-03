@@ -20,7 +20,7 @@ const movieSchema = new mongoose.Schema(
       required: true,
     },
     year: {
-      type: Number,
+      type: String,
       required: true,
     },
     nameRU: {
@@ -32,10 +32,10 @@ const movieSchema = new mongoose.Schema(
       required: true,
     },
     movieId: {
-      type: String,
+      type: Number,
       required: true,
     },
-    trailerLink: {
+    trailer: {
       type: String,
       required: true,
       validate: linkRegExPattern,
@@ -55,7 +55,6 @@ const movieSchema = new mongoose.Schema(
       ref: 'user',
       required: true,
     },
-    createdAt: { type: Date, default: Date.now },
   },
   {
     versionKey: false,
