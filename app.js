@@ -2,7 +2,6 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
-
 const { celebrate, errors } = require('celebrate');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -36,7 +35,11 @@ app.use(express.json());
 app.use(cookieParser());
 
 const corsOptions = {
-  origin: /https?:\/\/filmexplorer.students.nomoredomains.sbs/,
+  origin: [
+    'http://localhost:3000',
+    'https://filmexplorer.students.nomoredomains.sbs',
+    'http://filmexplorer.students.nomoredomains.sbs',
+  ],
   credentials: true,
   optionsSuccessStatus: 200,
 };
