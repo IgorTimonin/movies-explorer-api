@@ -122,7 +122,8 @@ module.exports.logoutUser = (req, res) => {
     .clearCookie('jwt', {
       domain: domainAdress,
       httpOnly: true,
-      sameSite: true,
+      sameSite: 'none',
+      secure: true,
     })
     .status(200)
     .send({ message: successLogout });
