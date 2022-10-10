@@ -108,8 +108,8 @@ module.exports.login = (req, res, next) => {
           domain: domainAdress,
           maxAge: 3600000 * 24 * 7,
           httpOnly: true,
-          sameSite: true,
-          // secure: true,
+          sameSite: 'none',
+          secure: true,
         })
         .status(200)
         .send({ message: successLogin });
