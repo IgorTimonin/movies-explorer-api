@@ -80,9 +80,7 @@ module.exports.updateUserProfile = (req, res, next) => {
   )
     .then((user) => res.send(user))
     .catch((err) => {
-      if (err.code === 11000) {
-        next(new ConflictError(conflictEmailErr));
-      } else if (err.name === 'ValidationError') {
+      if (err.name === 'ValidationError') {
         next(new BadRequestError(reqUserDataErr));
       } else {
         next(err);
