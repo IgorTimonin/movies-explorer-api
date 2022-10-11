@@ -35,7 +35,7 @@ const movieSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    trailer: {
+    trailerLink: {
       type: String,
       required: true,
       validate: linkRegExPattern,
@@ -58,6 +58,6 @@ const movieSchema = new mongoose.Schema(
   },
   {
     versionKey: false,
-  },
+  }
 );
 module.exports = mongoose.model('movie', movieSchema);

@@ -33,7 +33,7 @@ module.exports.createMovieValidator = {
     movieId: Joi.number().required(),
     duration: Joi.number().required(),
     year: Joi.string().required(),
-    trailer: Joi.string().required().pattern(linkRegExPattern),
+    trailerLink: Joi.string().required().pattern(linkRegExPattern),
     image: Joi.string().required().pattern(linkRegExPattern),
     thumbnail: Joi.string().required().pattern(linkRegExPattern),
   }),
