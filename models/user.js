@@ -32,10 +32,13 @@ const userSchema = new mongoose.Schema(
   },
   {
     versionKey: false,
-  },
+  }
 );
 
-userSchema.statics.findUserByCredentials = function userValidation(email, password) {
+userSchema.statics.findUserByCredentials = function userValidation(
+  email,
+  password
+) {
   return this.findOne({ email })
     .select('+password')
     .then((user) => {

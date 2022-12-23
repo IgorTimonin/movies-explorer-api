@@ -39,6 +39,8 @@ const corsOptions = {
     'http://localhost:3000',
     'https://filmexplorer.students.nomoredomains.sbs',
     'http://filmexplorer.students.nomoredomains.sbs',
+    'https://movieyes-ten.vercel.app/',
+    'http://movieyes-ten.vercel.app/',
   ],
   credentials: true,
   optionsSuccessStatus: 200,
