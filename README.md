@@ -1,5 +1,5 @@
 # movies-explorer-api
-Backend part of Diploma
+Backend part of Movies-explorer service
 
 ## Адрес сервера
 
