@@ -2,9 +2,7 @@
 Backend part of Movies-explorer service
 
 ## Адрес сервера
-
-51.250.28.81:3001 - ip адрес сервера
-api.filmexplorer.students.nomoredomains.sbs - адрес api
+***переезд на другой хостинг***
 
 ## Директории
 
